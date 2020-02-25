@@ -20,7 +20,7 @@ class Auth
 
     public function logged_in()
     {
-        if ($this->ci->session->has_userdata('logged_in') && $this->ci->session->get_userdata('logged_in')==1) {
+        if ($this->ci->session->has_userdata('logged_in') && $this->ci->session->userdata('logged_in')==1) {
             return true;
         }
         return false;
@@ -28,10 +28,21 @@ class Auth
 
     public function do_login($username,$password)
     {
-        if ($this->logged_in()) {
-            redirect('/');
+        $user = $this->ci->db->query("SELECT * FROM users WHERE username='$username' AND password='".md5($password)."' ")->row();
+        var_dump($user);
+        if ($user) {
+            $this->ci->session->set_userdata('logged_in',1);
+            $this->ci->session->set_userdata('user',$user);
+            redirect('main');
+        } else {
+            $this->ci->session->set_flashdata('error', 'Invalid username/password');
+            redirect('login');
         }
-        redirect('/');
+    }
+
+    public function error()
+    {
+        return $this->ci->session->flashdata('error');
     }
 }
 

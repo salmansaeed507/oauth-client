@@ -11,6 +11,9 @@ class User extends CI_Controller {
 
 	public function login()
 	{
+		if (Auth()->logged_in()) {
+
+		}
 		$this->load->view('user/login');
 	}
 
